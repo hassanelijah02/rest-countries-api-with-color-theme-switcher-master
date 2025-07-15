@@ -1,7 +1,7 @@
 const backgroundToggle = document.querySelector('#background-toggle');
 const searchInput = document.querySelector('#search');
 const filterInput = document.querySelector('#filter-input');
-let allCountries = []
+let allCountries = [];
 
 if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark-mode")
@@ -17,13 +17,11 @@ backgroundToggle.addEventListener('click', () => {
 })
 
 function onSearchInput() {
-    return searchInput.value.toLowerCase().trim();
-    
+    return searchInput.value.toLowerCase().trim();   
 }
 
 function onFilterInput() {
-    return filterInput.value;
-    
+    return filterInput.value;   
 }
 
 function searchResults(countries, searchQuery) {
@@ -31,13 +29,10 @@ function searchResults(countries, searchQuery) {
         countries = allCountries
     }
 
-    return countries.filter(country => 
-        country.name.common.toLowerCase().includes
-        (searchQuery))
+    return countries.filter(country => country.name.toLowerCase().includes(searchQuery))
 }
 
 function filterResults(countries, filterOptions) {
-    
     return countries.filter(country => 
     country.region.toLowerCase().includes(filterOptions.toLowerCase()))
 }
@@ -53,21 +48,17 @@ async function countryResults () {
     displayCountriesInfo(searchTermResults)
 }
 
-
 async function fetchAPIData() {
-    const response = await fetch('https://restcountries.com/v3.1/all');
+    const response = await fetch('./data.json');
     const data = await response.json();
     allCountries = data
-    
 
     displayCountriesInfo(data)
     return data;
 }
 
-
 function displayCountriesInfo(results) {
-    document.querySelector('#country-info').innerHTML = ''
-    console.log(results);
+    document.querySelector('#country-info').innerHTML = '';
     results.forEach(country => {
         const div = document.createElement('div');
         div.classList.add('card');
@@ -75,7 +66,7 @@ function displayCountriesInfo(results) {
             <img src="${country.flags.png}" alt="">
                             <div class="card-body">
                             <ul>
-                                <h4 class="country-title">${country.name.common}</h4>
+                                <h4 class="country-title">${country.name}</h4>
                                 <h5>Population: <span>${addCommasToNumber(country.population)}</span></h5>
                                 <h5>Region: <span>${country.region}</span></h5>
                                 <h5>Capital: <span>${country.capital}</span></h5>
@@ -91,10 +82,7 @@ function displayCountriesInfo(results) {
         document.querySelector('#country-details').classList.add('active')
         displayCountriesDetails(country)
        })
-
-
     });
-  
 }
 
 function displayCountriesDetails(selectedCountry) {
@@ -107,12 +95,12 @@ function displayCountriesDetails(selectedCountry) {
                 </div>
                 <div class="country-details-content">
                     <div class="country-details-name">
-                        <h2>${selectedCountry.name.common}</h2>
+                        <h2>${selectedCountry.name}</h2>
                     </div>
                     <div class="country-details-info">
                         <div class="country-details-info-left">
                         <ul>
-                            <li><strong>Native Name: </strong>${selectedCountry.name.common}</li>
+                            <li><strong>Native Name: </strong>${selectedCountry.nativeName}</li>
                             <li><strong>Population: </strong>${addCommasToNumber(selectedCountry.population)}</li>
                             <li><strong>Region: </strong>${selectedCountry.region}</li>
                             ${selectedCountry.subregion ? 
@@ -120,14 +108,15 @@ function displayCountriesDetails(selectedCountry) {
                                 :
                                 `<li><strong>Sub Region: </strong>none</li>`
                             }
-                            <li><strong>Capital: </strong>${selectedCountry.capital.join(', ')}</li>
+                            <li><strong>Capital: </strong>${selectedCountry.capital}</li>
+                            
                         </ul>    
                         </div>
                         <div class="country-details-info-right">
                         <ul>
-                            <li><strong>Top Level Domain: </strong>${selectedCountry.tld}</li>
+                            <li><strong>Top Level Domain: </strong>${selectedCountry.topLevelDomain}</li>
                             <li><strong>Currencies: </strong>${selectedCountry.currencies[Object.keys(selectedCountry.currencies)].name}</li>
-                            <li><strong>Languages: </strong>${Object.values(selectedCountry.languages).map(item => `${item}`).join(', ')}</li>
+                            <li><strong>Languages: </strong>${Object.values(selectedCountry.languages).map(item => `${item.name}`).join(', ')}</li>
                         </ul>    
                         </div>
                     </div>
@@ -153,20 +142,14 @@ function displayCountriesDetails(selectedCountry) {
             document.querySelector('#back-btn').addEventListener('click', () => {
                 document.querySelector('.main').style.display = 'block'
                 document.querySelector('#country-details').classList.remove('active')
-            })
-        
-            
-           
+            })          
 }   
     
 
 
-
-
-document.addEventListener('DOMContentLoaded', fetchAPIData)
-searchInput.addEventListener('input', countryResults)
-filterInput.addEventListener('change', countryResults)
-
+document.addEventListener('DOMContentLoaded', fetchAPIData);
+searchInput.addEventListener('input', countryResults);
+filterInput.addEventListener('change', countryResults);
 
 function addCommasToNumber(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
